@@ -6,8 +6,59 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>
-        Hello, world!
-    </h1>
+    <canvas id="canvas" width="1920" height="1080"></canvas>
+    <script>
+
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let spheres = [];
+
+        function init() {
+            canvas.addEventListener('click', onCanvasClick);
+            requestAnimationFrame(update);
+        }
+
+        function onCanvasClick(e){
+            let radius = Math.random() * 50 + 10;
+            let color = getRandomColor();
+            let speedX = Math.random() * 2 - 1;
+            let speedY = Math.random() * 2 - 1;
+
+            spheres.push({ x: e.clientX, y: e.clientY, radius, color, speedX, speedY });
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            spheres.forEach((sphere) => {
+                sphere.x += sphere.speedX;
+                sphere.y += sphere.speedY;
+
+                ctx.fillStyle = sphere.color;
+                ctx.beginPath();
+                ctx.arc(sphere.x, sphere.y, sphere.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (sphere.x + sphere.radius > canvas.width || sphere.x - sphere.radius < 0) {
+                    sphere.speedX = -sphere.speedX;
+                }
+                if (sphere.y + sphere.radius > canvas.height || sphere.y - sphere.radius < 0) {
+                    sphere.speedY = -sphere.speedY;
+                }
+            });
+
+            requestAnimationFrame(update);
+        }
+
+        function getRandomColor() {
+            let r = Math.floor(Math.random() * 256);
+            let g = Math.floor(Math.random() * 256);
+            let b = Math.floor(Math.random() * 256);
+            return `rgb(${r},${g},${b})`;
+        }
+
+        init();
+
+    </script>
 </body>
 </html>
