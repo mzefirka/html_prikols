@@ -7,11 +7,16 @@
 </head>
 <body>
     <canvas id="canvas" width="1920" height="1080"></canvas>
+    <audio id="popSound">
+        <source src="pop_sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
     <script>
 
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
         let spheres = [];
+        let popSound = document.getElementById('popSound');
 
         function init() {
             canvas.addEventListener('click', onCanvasClick);
@@ -19,26 +24,32 @@
         }
 
         function onCanvasClick(e){
-            let radius = Math.random() * 50 + 10;
-            let color = getRandomColor();
-            let speedX = Math.random() * 2 - 1;
-            let speedY = Math.random() * 2 - 1;
+            if (e.button === 0) { // Check if left mouse button is clicked
+                let radius = Math.random() * 50 + 10;
+                let color = getRandomColor();
+                let speedX = Math.random() * 2 - 1; // Random horizontal speed between -1 and 1
+                let speedY = Math.random() * 2 - 1; // Random vertical speed between -1 and 1
 
-            spheres.push({ x: e.clientX, y: e.clientY, radius, color, speedX, speedY });
+                spheres.push({ x: e.clientX, y: e.clientY, radius, color, speedX, speedY });
+                popSound.play(); // Play pop sound
+            }
         }
 
         function update() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             spheres.forEach((sphere) => {
+                // Update sphere position
                 sphere.x += sphere.speedX;
                 sphere.y += sphere.speedY;
 
+                // Draw sphere
                 ctx.fillStyle = sphere.color;
                 ctx.beginPath();
                 ctx.arc(sphere.x, sphere.y, sphere.radius, 0, Math.PI * 2);
                 ctx.fill();
 
+                // Bounce off walls
                 if (sphere.x + sphere.radius > canvas.width || sphere.x - sphere.radius < 0) {
                     sphere.speedX = -sphere.speedX;
                 }
