@@ -61,23 +61,40 @@ function update() {
     shapes.forEach((shape) => {
         if (shape.type === 'sphere') {
             drawSphere(shape);
+            handleSphereCollision(shape);
         } else if (shape.type === 'rectangle') {
             drawRectangle(shape);
+            handleRectangleCollision(shape);
         }
 
         shape.x += shape.speedX;
         shape.y += shape.speedY;
-
-        if (shape.x + shape.width > canvas.width - barrierHeight || shape.x < barrierHeight) {
-            shape.speedX = -shape.speedX;
-        }
-        if (shape.y + shape.height > canvas.height - barrierHeight || shape.y < barrierHeight) {
-            shape.speedY = -shape.speedY;
-        }
     });
 
     requestAnimationFrame(update);
 }
+
+function handleRectangleCollision(rectangle) {
+    if (rectangle.x + rectangle.width > canvas.width - barrierHeight || rectangle.x < barrierHeight) {
+        rectangle.speedX = -rectangle.speedX;
+    }
+    if (rectangle.y + rectangle.height > canvas.height - barrierHeight || rectangle.y < barrierHeight) {
+        rectangle.speedY = -rectangle.speedY;
+    }
+}
+
+function handleSphereCollision(sphere) {
+    if (sphere.x + sphere.radius > canvas.width - barrierHeight || sphere.x - sphere.radius < barrierHeight) {
+        sphere.speedX = -sphere.speedX;
+    }
+    if (sphere.y + sphere.radius > canvas.height - barrierHeight || sphere.y - sphere.radius < barrierHeight) {
+        sphere.speedY = -sphere.speedY;
+    }
+}
+
+
+
+
 
 function drawSphere(sphere) {
     ctx.fillStyle = `rgba(${sphere.color.r},${sphere.color.g},${sphere.color.b},${sphere.color.a})`;
