@@ -1,124 +1,63 @@
-// script.js
-
-let canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
-let shapes = []; // Array to store both spheres and rectangles
-let popSound = document.getElementById('popSound');
-let barrierHeight = 30; // Height of the barriers
-let spawnDelay = 300; // Delay in milliseconds
-
-let lastSpawnTime = 0; // Variable to keep track of the last spawn time
-
-function init() {
-    canvas.addEventListener('mousemove', onMouseMove);
-    requestAnimationFrame(update);
+function getRandomNumber(size) {
+    let num = Math.floor(Math.random() * size);
+    return num;
 }
 
-function onMouseMove(e) {
-    let currentTime = new Date().getTime();
-    if (currentTime - lastSpawnTime > spawnDelay) {
-        let shape;
-        if (Math.random() < 0.5) {
-            // Create a sphere
-            shape = createSphere(e.clientX, e.clientY);
-        } else {
-            // Create a rectangle
-            shape = createRectangle(e.clientX, e.clientY);
-        }
-        shapes.push(shape);
-        popSound.play(); // Play pop sound
-        lastSpawnTime = currentTime; // Update last spawn time
+function getDistance(event, target) {
+    const diffX = event.offsetX - target.x;
+    const diffY = event.offsetY - target.y;
+    const dist = Math.sqrt((diffX * diffX) + (diffY * diffY));
+    return dist;
+}
+
+function getDistanceHint(distance) {
+    if (distance < 10) {
+        return "Пече!";
+    } else if (distance < 20) {
+        return "Дуже гаряче";
+    } else if (distance < 40) {
+        return "Гаряче";
+    } else if (distance < 80) {
+        return "Тепло";
+    } else if (distance < 160) {
+        return "Холодно";
+    } else if (distance < 320) {
+        return "Дуже холодно";
+    } else {
+        return "Можна замерзнути";
     }
 }
 
-function createSphere(x, y) {
-    let radius = Math.random() * 50 + 10;
-    let color = getRandomColor();
-    let speedX = Math.random() * 2 - 1; // Random horizontal speed between -1 and 1
-    let speedY = Math.random() * 2 - 1; // Random vertical speed between -1 and 1
-    return { type: 'sphere', x, y, radius, color, speedX, speedY };
+const width = 450;
+const height = 400;
+let click = 0;
+const maxMoves = 20;
+
+const target = {
+    x: getRandomNumber(width),
+    y: getRandomNumber(height)
 }
 
-function createRectangle(x, y) {
-    let width = Math.random() * 100 + 20;
-    let height = Math.random() * 100 + 20;
-    let color = getRandomColor();
-    let speedX = Math.random() * 2 - 1; // Random horizontal speed between -1 and 1
-    let speedY = Math.random() * 2 - 1; // Random vertical speed between -1 and 1
-    return { type: 'rectangle', x, y, width, height, color, speedX, speedY };
-}
+const distanceP = document.getElementById('distance')
+const clicker = document.getElementById('clickCounter')
 
-function update() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw barriers
-    ctx.fillStyle = '#ccc';
-    ctx.fillRect(0, 0, canvas.width, barrierHeight);
-    ctx.fillRect(0, canvas.height - barrierHeight, canvas.width, barrierHeight);
-    ctx.fillRect(0, 0, barrierHeight, canvas.height);
-    ctx.fillRect(canvas.width - barrierHeight, 0, barrierHeight, canvas.height);
-
-    shapes.forEach((shape) => {
-        if (shape.type === 'sphere') {
-            drawSphere(shape);
-            handleSphereCollision(shape);
-        } else if (shape.type === 'rectangle') {
-            drawRectangle(shape);
-            handleRectangleCollision(shape);
-        }
-
-        shape.x += shape.speedX;
-        shape.y += shape.speedY;
-    });
-
-    requestAnimationFrame(update);
-}
-
-function handleRectangleCollision(rectangle) {
-    if (rectangle.x + rectangle.width > canvas.width - barrierHeight || rectangle.x < barrierHeight) {
-        rectangle.speedX = -rectangle.speedX;
+const mapElement = document.getElementById("map");
+mapElement.addEventListener("click", (event) => {
+    const hint = getDistanceHint(getDistance(event, target))
+    click++;
+    console.log(hint);
+    clicker.innerHTML = click
+    distanceP.innerHTML = hint
+    if (hint === "Пече!") {
+        alert('Пече! Ти знайшов скарб!')
+        click = 0
+        target.x = getRandomNumber(width)
+        target.y = getRandomNumber(height)
+    } else if (click == maxMoves) {
+        alert('Ти не зміг знайти скарб. Спробуй ще раз')
+        click = 0
+        target.x = getRandomNumber(width)
+        target.y = getRandomNumber(height)
     }
-    if (rectangle.y + rectangle.height > canvas.height - barrierHeight || rectangle.y < barrierHeight) {
-        rectangle.speedY = -rectangle.speedY;
-    }
-}
-
-function handleSphereCollision(sphere) {
-    if (sphere.x + sphere.radius > canvas.width - barrierHeight || sphere.x - sphere.radius < barrierHeight) {
-        sphere.speedX = -sphere.speedX;
-    }
-    if (sphere.y + sphere.radius > canvas.height - barrierHeight || sphere.y - sphere.radius < barrierHeight) {
-        sphere.speedY = -sphere.speedY;
-    }
-}
-
-
-
-
-
-function drawSphere(sphere) {
-    ctx.fillStyle = `rgba(${sphere.color.r},${sphere.color.g},${sphere.color.b},${sphere.color.a})`;
-    ctx.strokeStyle = '#000000'; // Stroke color (black)
-    ctx.beginPath();
-    ctx.arc(sphere.x, sphere.y, sphere.radius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-}
-
-function drawRectangle(rectangle) {
-    ctx.fillStyle = `rgba(${rectangle.color.r},${rectangle.color.g},${rectangle.color.b},${rectangle.color.a})`;
-    ctx.strokeStyle = '#000000'; // Stroke color (black)
-    ctx.beginPath();
-    ctx.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-    ctx.strokeRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-}
-
-function getRandomColor() {
-    let r = Math.floor(Math.random() * 256);
-    let g = Math.floor(Math.random() * 256);
-    let b = Math.floor(Math.random() * 256);
-    let a = Math.random();
-    return { r, g, b, a };
-}
-
-init();
+    
+});

@@ -1,0 +1,16 @@
+h1{
+    display: flex;
+    justify-content: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: 700;
+}
+p{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: grey;
+    display: flex;
+    justify-content: center;
+}
+div{
+    width: 689px;
+    justify-content: center;
+}

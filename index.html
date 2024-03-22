@@ -3,27 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden; /* Hide scrollbars */
-            background-color: #f0f0f0; /* Set background color */
-        }
-
-        canvas {
-            display: block;
-            margin: auto;
-            border: 2px solid #000; /* Add border around canvas */
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <title>kladman</title>
 </head>
 <body>
-    <canvas id="canvas" width="1920" height="935"></canvas>
-    <audio id="popSound">
-        <source src="pop_sound.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+    <h1>Знайди захований скарб</h1>
+    <div>
+        <img id="map" src="map.png" alt="map" height="500px">
+        <p class="counter" id="clickCounter">0</p>
+        <p id="distance"></p>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
